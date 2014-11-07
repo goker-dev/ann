@@ -1,0 +1,125 @@
+import math
+import random
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def sigma(x):
+    return 1 / (1 + math.exp(-x))
+
+
+def derivative(x):
+    return x * (1 - x)
+
+
+class Neuron():
+    weights = []
+    output = []
+    error = []
+
+    def __init__(self, coef=0.5):
+        self.coef = coef
+        self.weights = [random.random() for e in range(3)]
+
+    def activation(self, inputs):
+        self.output = sigma(sum(i * w for i, w in zip(inputs, self.weights)))
+        self.output = round(self.output, 2)
+
+    def learning(self, inputs):
+        self.weights = [w + i * self.coef * self.error for w, i in zip(self.weights, inputs)]
+
+
+def backpropagation(dataset, errorRatio=0.05, iterations=10000):
+    outputs = [i.pop() for i in dataset]
+    inputs = [i for i in dataset]
+
+    N1 = Neuron()
+    N2 = Neuron()
+    N3 = Neuron()
+
+    bias = -1
+    [input.append(bias) for input in inputs]
+    print "initial weights"
+    print ["%.2f" % e for e in N1.weights]
+    print ["%.2f" % e for e in N2.weights]
+    print ["%.2f" % e for e in N3.weights]
+
+    # training
+    for i in range(iterations):
+        totalError = 0
+        for input, output in zip(inputs, outputs):
+            N1.activation(input)
+            N2.activation(input)
+            N3.activation([N1.output, N2.output, bias])
+
+            totalError += abs(output - N3.output)
+
+            N3.error = derivative(N3.output) * (output - N3.output)
+            N1.error = derivative(N1.output) * (N3.weights[0] * N3.error)
+            N2.error = derivative(N2.output) * (N3.weights[1] * N3.error)
+
+            N3.learning([N1.output, N2.output, bias])
+            N1.learning(input)
+            N2.learning(input)
+
+        if totalError / len(inputs) <= errorRatio:
+            break
+    # test
+    outputs = []
+    layerOutputs = []
+    for input in inputs:
+        N1.activation(input)
+        N2.activation(input)
+        layerOutputs.append([N1.output, N2.output])
+        N3.activation([N1.output, N2.output, bias])
+        outputs.append(N3.output)
+
+    print "last weights"
+    print ["%.2f" % e for e in N1.weights]
+    print ["%.2f" % e for e in N2.weights]
+    print ["%.2f" % e for e in N3.weights]
+    print "outputs"
+    print ["%.2f" % e for e in outputs]
+    print "iteration: %d, totalError: %.2f / %d = %.2f" % (i, totalError, len(inputs), totalError / len(inputs))
+    print "decision boundaries (ax+by+c=0)"
+    print "%.2fx + %.2fy + %.2f = 0" % (N1.weights[0], N1.weights[1], N1.weights[2])
+    print "%.2fx + %.2fy + %.2f = 0" % (N2.weights[0], N2.weights[1], N2.weights[2])
+    print "%.2fx + %.2fy + %.2f = 0" % (N3.weights[0], N3.weights[1], N3.weights[2])
+    return {'v': layerOutputs,
+            'formula': [
+                "(%.2f - %.2f * x) / %.2f" % (N1.weights[2], N1.weights[0], N1.weights[1]),
+                "(%.2f - %.2f * x) / %.2f" % (N2.weights[2], N2.weights[0], N2.weights[1]),
+                "(%.2f - %.2f * x) / %.2f" % (N3.weights[2], N3.weights[0], N3.weights[1])]}
+
+
+dataset = [[0.30, 3.5, 0], [0.35, 3.3, 0], [0.40, 3.6, 0], [1.20, 2.35, 0], [1.40, 2.15, 0], [1.40, 2.25, 0],
+           [1.55, 2.7, 0], [2.15, 1.45, 0], [3.00, 0.65, 0], [3.40, 0.8, 0], [4.20, 1, 0], [4.25, 1.2, 0],
+           [4.40, 1.45, 0], [4.60, 1.6, 0], [5.30, 1.9, 0], [5.55, 2.15, 0], [5.65, 2.2, 0], [5.85, 2.6, 0],
+           [5.90, 2.75, 0], [5.95, 2.1, 0], [2.80, 1.5, 1], [2.85, 2.45, 1], [2.90, 2, 1], [3.00, 1.75, 1],
+           [3.00, 2.25, 1], [3.10, 2.05, 1], [3.30, 1.55, 1], [3.35, 1.7, 1], [3.35, 1.85, 1], [3.45, 1.7, 1]]
+
+# XOR Sample
+#dataset = [[0, 0, 0], [0, 1, 1], [1, 0, 1], [1, 1, 0]]
+
+for i in dataset:
+    plt.plot(i[0], i[1], 'g*' if i[2] == 1 else 'bo')
+
+plt.axis([-1, 7, -1, 5])
+
+r = backpropagation(dataset)
+
+#v = [r['v'][3], r['v'][8], r['v'][11], r['v'][20], r['v'][28]]
+#print "hidden layer results:"
+#print v
+#for i in v:
+#    plt.plot(i[0], i[1], 'r^')
+
+x = np.array([-1, 7])
+y = eval(r['formula'][0])
+plt.plot(x, y, 'b')
+y = eval(r['formula'][1])
+plt.plot(x, y, 'g')
+y = eval(r['formula'][2])
+plt.plot(x, y, 'y')
+
+plt.show()
