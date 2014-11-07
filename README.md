@@ -34,7 +34,7 @@ It generate both text and graphical results (with decision boundaries) when the 
     4.92x + 4.81y + 7.48 = 0
     7.47x + -7.72y + 3.58 = 0
 
-![ANN XOR Output](https://github.com/gokercebeci/ann/edit/master/ann-output-xor.png)
+![ANN XOR Output](https://github.com/gokercebeci/ann/blob/master/ann-output-xor.png)
 
 ####Sample Input:
 
@@ -64,7 +64,7 @@ It generate both text and graphical results (with decision boundaries) when the 
     -7.90x + 8.03y + 3.91 = 0
     
     
-![ANN Output](https://github.com/gokercebeci/ann/edit/master/ann-output.png)
+![ANN Output](https://github.com/gokercebeci/ann/blob/master/ann-output.png)
 
 License
 -------
