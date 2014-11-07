@@ -3,8 +3,8 @@ ann
 
 ###Artificial Neural Network (Backpropagation)
 
-This is a Python Multilayer Backpropagation ANN sample. The network has __3 neurons__. _2 inputs_ are **N1**, **N2** and _1 output_ is **N3**.
-It calculates neurons' weights by the signum function. It stops learning by number of iterations or error ratio value.
+This is a Python Multilayer Backpropagation ANN sample. The network has __3 neurons__. The _2 inputs_ are **N1**, **N2** and _the output_ is **N3**.
+It calculates neurons' weights by the signum function. It stops learning by the number of iterations or error ratio value.
 It generates both text and graphical results (with decision boundaries) when the learning is finished.
 
 ####The Signum Function:
